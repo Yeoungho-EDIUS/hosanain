@@ -3,116 +3,397 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>기사 프로젝트 노트</title>
+<title>우리 아이들 학원 시간표</title>
 <style>
   :root{
-    --bg:#faf7f2; --card:#ffffff; --ink:#2b2622; --muted:#8a8178;
-    --line:#e7dfd3; --accent:#8a5a2b; --accent-soft:#f3e9dc;
+    --bg:#faf6ef; --card:#ffffff; --ink:#1f2a44; --sub:#6b7488; --line:#e8e1d3;
+    --accent:#2f6f5e; --warn:#c2512d;
+    --k0:#2f6f5e; --k1:#d1883a; --k2:#4a6fa5; --k3:#a0517a;
   }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
-    line-height:1.6;-webkit-text-size-adjust:100%}
-  .wrap{max-width:720px;margin:0 auto;padding:20px 16px 56px}
-  header{padding:8px 0 18px}
-  header small{color:var(--accent);font-weight:700;letter-spacing:.04em}
-  h1{margin:4px 0 0;font-size:1.6rem;line-height:1.3}
-  section{background:var(--card);border:1px solid var(--line);border-radius:14px;
-    padding:16px;margin-bottom:14px}
-  h2{margin:0 0 10px;font-size:1rem;color:var(--accent)}
-  label.sub{display:block;font-size:.8rem;color:var(--muted);margin:10px 0 4px}
-  input[type=text],textarea{width:100%;font:inherit;color:inherit;background:var(--bg);
-    border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none}
-  input[type=text]:focus,textarea:focus{border-color:var(--accent);background:#fff}
-  textarea{resize:vertical;min-height:44px}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-  .chk{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-  .chk input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent);flex:none}
-  .chk input[type=text]{flex:1}
-  .chk.done input[type=text]{text-decoration:line-through;color:var(--muted)}
-  .timeline{position:relative;margin:4px 0 0;padding-left:26px}
-  .timeline::before{content:"";position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:var(--line)}
-  .day{position:relative;padding-bottom:16px}
-  .day:last-child{padding-bottom:0}
-  .day::before{content:"";position:absolute;left:-26px;top:5px;width:16px;height:16px;border-radius:50%;
-    background:var(--card);border:3px solid var(--accent);box-sizing:border-box}
-  .day.today::before{background:var(--accent)}
-  .day b{display:inline-block;background:var(--accent-soft);color:var(--accent);
-    border-radius:999px;padding:2px 10px;font-size:.85rem;margin-bottom:6px}
-  .angle{background:var(--accent-soft);border-radius:10px;padding:10px 12px;margin-top:6px}
-  .angle span{font-size:.8rem;color:var(--muted);display:block}
-  .angle strong{color:var(--accent)}
-  @media (max-width:420px){.row{grid-template-columns:1fr}}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;line-height:1.5;-webkit-text-size-adjust:100%}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 56px}
+  button,input,select{font:inherit;color:inherit}
+
+  /* 첫 화면 */
+  .hero{padding:12px 4px 20px}
+  .date{font-size:14px;color:var(--sub);letter-spacing:.02em}
+  h1{font-size:30px;line-height:1.25;margin:6px 0 6px;letter-spacing:-.02em}
+  .lead{color:var(--sub);font-size:15px}
+
+  .now{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-top:18px}
+  @media (max-width:560px){.now{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+  .card h2{font-size:13px;font-weight:600;color:var(--sub);margin-bottom:10px;letter-spacing:.04em}
+  .today-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+  .today-item:first-of-type{border-top:0}
+  .time{font-variant-numeric:tabular-nums;font-weight:700;min-width:96px}
+  .dot{width:10px;height:10px;border-radius:50%;flex:none}
+  .who{font-weight:600}
+  .what{color:var(--sub);font-size:14px}
+  .empty{color:var(--sub);padding:6px 0}
+  .dday{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+  .dday small{font-size:15px;font-weight:600;color:var(--sub);margin-left:4px}
+  .dday.soon{color:var(--warn)}
+  .pay-sub{margin-top:6px;font-size:14px;color:var(--sub)}
+
+  /* 섹션 */
+  section{margin-top:30px}
+  .sec-head{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  h3{font-size:19px;letter-spacing:-.01em}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font-size:14px;cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+
+  .week{display:grid;gap:8px}
+  .day{display:grid;grid-template-columns:44px 1fr;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+  .day.today{border-color:var(--accent);box-shadow:0 0 0 2px rgba(47,111,94,.15)}
+  .dname{font-weight:800;font-size:16px;padding-top:6px}
+  .day.today .dname{color:var(--accent)}
+  .lessons{display:flex;flex-direction:column;gap:6px}
+  .lesson{display:flex;align-items:center;gap:8px;border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 9%,white);border-radius:8px;padding:6px 8px 6px 10px;font-size:14px}
+  .lesson .t{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+  .lesson .m{flex:1;min-width:0}
+  .lesson .m b{font-weight:700}
+  .none{color:#b3b8c4;font-size:14px;padding-top:7px}
+  .x{border:0;background:transparent;color:var(--sub);cursor:pointer;font-size:18px;line-height:1;padding:2px 6px;border-radius:6px}
+  .x:hover{background:rgba(0,0,0,.06)}
+
+  .pays{display:grid;gap:8px}
+  .pay{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .pay .info{flex:1;min-width:0}
+  .pay .nm{font-weight:700}
+  .pay .dt{font-size:13px;color:var(--sub)}
+  .pay .amt{font-weight:800;font-variant-numeric:tabular-nums}
+  .badge{font-size:12px;font-weight:700;border-radius:999px;padding:3px 9px;background:#eef3f1;color:var(--accent);white-space:nowrap}
+  .badge.soon{background:#fbeae3;color:var(--warn)}
+  .total{margin-top:10px;text-align:right;font-size:14px;color:var(--sub)}
+  .total b{color:var(--ink);font-size:17px}
+
+  /* 입력 */
+  details{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 14px}
+  summary{cursor:pointer;font-weight:700;padding:11px 0;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"＋ ";color:var(--accent)}
+  details[open] summary::before{content:"－ "}
+  .form{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 0 14px}
+  .form label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--sub)}
+  .form .full{grid-column:1/-1}
+  input,select{border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:#fff;color:var(--ink);width:100%}
+  .btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--sub);border:1px solid var(--line)}
+  .kidrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .kidrow input{flex:1}
+  .msg{min-height:20px;font-size:14px;font-weight:600;color:var(--accent)}
+  .msg.err{color:var(--warn)}
+  .foot{margin-top:34px;text-align:center;color:var(--sub);font-size:12px}
+  .foot button{margin-top:8px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <small>PROJECT NOTE</small>
-    <h1>기사 프로젝트 노트</h1>
+
+  <header class="hero">
+    <div class="date" id="date"></div>
+    <h1>우리 아이들 학원,<br>이제 외우지 않아도 돼요</h1>
+    <p class="lead">오늘 일정과 다음 결제일을 한눈에 확인하세요.</p>
+
+    <div class="now">
+      <div class="card">
+        <h2>오늘 학원</h2>
+        <div id="today"></div>
+      </div>
+      <div class="card">
+        <h2>다음 학원비 결제</h2>
+        <div id="next"></div>
+      </div>
+    </div>
   </header>
 
   <section>
-    <h2>프로젝트 한 줄</h2>
-    <input type="text" data-k="brief" placeholder="브리프를 한 줄로 적어 주세요">
-  </section>
-
-  <section>
-    <h2>팀 이름과 역할</h2>
-    <label class="sub">팀 이름</label>
-    <input type="text" data-k="team" placeholder="팀 이름">
-    <label class="sub">팀원 (이름 · 역할)</label>
-    <div class="row"><input type="text" data-k="m1n" placeholder="이름"><input type="text" data-k="m1r" placeholder="역할"></div>
-    <div class="row"><input type="text" data-k="m2n" placeholder="이름"><input type="text" data-k="m2r" placeholder="역할"></div>
-    <div class="row"><input type="text" data-k="m3n" placeholder="이름"><input type="text" data-k="m3r" placeholder="역할"></div>
-    <div class="row"><input type="text" data-k="m4n" placeholder="이름"><input type="text" data-k="m4r" placeholder="역할"></div>
-  </section>
-
-  <section>
-    <h2>주제</h2>
-    <label class="sub">대주제</label>
-    <input type="text" data-k="topic" placeholder="배정받은 대주제">
-    <div class="angle">
-      <span>내 앵글</span>
-      <strong>내일 정함</strong>
+    <div class="sec-head">
+      <h3>이번 주 시간표</h3>
+      <div class="chips" id="filter"></div>
     </div>
+    <div class="week" id="week"></div>
+
+    <details>
+      <summary>학원 일정 추가</summary>
+      <div class="form" id="lessonForm">
+        <label>자녀<select id="lKid"></select></label>
+        <label>요일<select id="lDay"></select></label>
+        <label>시작<input type="time" id="lStart" required value="16:00"></label>
+        <label>끝<input type="time" id="lEnd" required value="17:00"></label>
+        <label class="full">학원 / 과목<input id="lTitle" placeholder="예: OO 영어학원" required maxlength="30"></label>
+        <button class="btn full" type="button" id="lSave">일정 저장</button>
+        <div class="msg full" id="lMsg" role="status" aria-live="polite"></div>
+      </div>
+    </details>
   </section>
 
   <section>
-    <h2>할 일 체크리스트</h2>
-    <div class="chk"><input type="checkbox" data-c="c1"><input type="text" data-k="t1" placeholder="할 일 1"></div>
-    <div class="chk"><input type="checkbox" data-c="c2"><input type="text" data-k="t2" placeholder="할 일 2"></div>
-    <div class="chk"><input type="checkbox" data-c="c3"><input type="text" data-k="t3" placeholder="할 일 3"></div>
-    <div class="chk"><input type="checkbox" data-c="c4"><input type="text" data-k="t4" placeholder="할 일 4"></div>
-    <div class="chk"><input type="checkbox" data-c="c5"><input type="text" data-k="t5" placeholder="할 일 5"></div>
+    <div class="sec-head"><h3>학원비 결제일</h3></div>
+    <div class="pays" id="pays"></div>
+    <div class="total" id="total"></div>
+
+    <details>
+      <summary>결제 정보 추가</summary>
+      <div class="form" id="payForm">
+        <label>자녀<select id="pKid"></select></label>
+        <label>매달 결제일<input type="number" id="pDay" min="1" max="31" required placeholder="예: 25"></label>
+        <label class="full">학원<input id="pTitle" placeholder="예: OO 영어학원" required maxlength="30"></label>
+        <label class="full">결제 금액(원)<input type="number" id="pAmt" min="0" step="1000" required placeholder="예: 250000"></label>
+        <button class="btn full" type="button" id="pSave">결제 정보 저장</button>
+        <div class="msg full" id="pMsg" role="status" aria-live="polite"></div>
+      </div>
+    </details>
   </section>
 
   <section>
-    <h2>날짜별 기록</h2>
-    <div class="timeline">
-      <div class="day"><b>11/18</b><textarea data-k="d1118" rows="2" placeholder="한 줄 기록"></textarea></div>
-      <div class="day today"><b>11/19 · 오늘</b><textarea data-k="d1119" rows="2" placeholder="오늘 한 줄"></textarea></div>
-      <div class="day"><b>11/20</b><textarea data-k="d1120" rows="2" placeholder="한 줄 기록"></textarea></div>
-    </div>
+    <details>
+      <summary>자녀 이름 설정</summary>
+      <div id="kids" style="padding-bottom:12px"></div>
+      <button class="btn ghost" id="addKid" type="button">자녀 추가</button>
+      <div style="height:12px"></div>
+    </details>
   </section>
+
+  <div class="foot">
+    입력한 내용은 이 기기의 브라우저에만 저장돼요.<br>
+    <button class="btn ghost" id="reset" type="button">예시 데이터로 되돌리기</button>
+  </div>
 </div>
 
 <script>
 (function(){
-  var KEY="article-project-note-v1", data={};
-  try{ data=JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){}
-  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(data)); }catch(e){} }
-  document.querySelectorAll("[data-k]").forEach(function(el){
-    var k=el.dataset.k; if(data[k]) el.value=data[k];
-    el.addEventListener("input",function(){ data[k]=el.value; save(); });
-  });
-  document.querySelectorAll("[data-c]").forEach(function(el){
-    var k=el.dataset.c, row=el.closest(".chk");
-    el.checked=!!data[k]; row.classList.toggle("done",el.checked);
-    el.addEventListener("change",function(){
-      data[k]=el.checked; row.classList.toggle("done",el.checked); save();
+  var DAYS=["월","화","수","목","금","토","일"];
+  var KEY="academy-schedule-v1";
+  var COLORS=["var(--k0)","var(--k1)","var(--k2)","var(--k3)"];
+
+  function sample(){
+    return {
+      kids:[{id:"a",name:"첫째"},{id:"b",name:"둘째"}],
+      lessons:[
+        {id:"l1",kid:"a",day:0,start:"16:00",end:"17:30",title:"OO 영어학원"},
+        {id:"l2",kid:"a",day:2,start:"16:00",end:"17:30",title:"OO 영어학원"},
+        {id:"l3",kid:"a",day:3,start:"18:00",end:"19:00",title:"OO 수학학원"},
+        {id:"l4",kid:"b",day:1,start:"15:30",end:"16:30",title:"OO 피아노"},
+        {id:"l5",kid:"b",day:3,start:"15:30",end:"16:30",title:"OO 피아노"},
+        {id:"l6",kid:"b",day:4,start:"16:00",end:"17:00",title:"OO 태권도"}
+      ],
+      pays:[
+        {id:"p1",kid:"a",day:25,amt:250000,title:"OO 영어학원"},
+        {id:"p2",kid:"a",day:5,amt:180000,title:"OO 수학학원"},
+        {id:"p3",kid:"b",day:10,amt:120000,title:"OO 피아노"}
+      ]
+    };
+  }
+  function load(){
+    try{var s=localStorage.getItem(KEY);if(s)return JSON.parse(s);}catch(e){}
+    return sample();
+  }
+  var state=load(), filter="all", memoryOnly=false;
+  function save(){
+    try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){memoryOnly=true;}
+  }
+  function uid(){return "i"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+  function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+  function kidIdx(id){for(var i=0;i<state.kids.length;i++)if(state.kids[i].id===id)return i;return 0;}
+  function kidName(id){var k=state.kids[kidIdx(id)];return k?k.name:"";}
+  function color(id){return COLORS[kidIdx(id)%COLORS.length];}
+  function won(n){return Number(n).toLocaleString("ko-KR")+"원";}
+
+  var now=new Date();
+  var todayIdx=(now.getDay()+6)%7;
+  document.getElementById("date").textContent=
+    now.getFullYear()+"년 "+(now.getMonth()+1)+"월 "+now.getDate()+"일 "+DAYS[todayIdx]+"요일";
+
+  function nextPayDate(day){
+    var y=now.getFullYear(), m=now.getMonth();
+    var base=new Date(y,m,now.getDate());
+    function at(yy,mm){var last=new Date(yy,mm+1,0).getDate();return new Date(yy,mm,Math.min(day,last));}
+    var d=at(y,m);
+    if(d<base)d=at(y,m+1);
+    return d;
+  }
+  function dleft(d){var b=new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.round((d-b)/86400000);}
+
+  function lessonRow(l,withDel){
+    var r=el("div","lesson");
+    r.style.setProperty("--c",color(l.kid));
+    r.appendChild(el("span","t",l.start+"–"+l.end));
+    var m=el("span","m");
+    m.appendChild(el("b",null,kidName(l.kid)));
+    m.appendChild(document.createTextNode(" · "+l.title));
+    r.appendChild(m);
+    if(withDel){
+      var x=el("button","x","×");x.type="button";x.setAttribute("aria-label","삭제");
+      x.onclick=function(){state.lessons=state.lessons.filter(function(i){return i.id!==l.id;});save();render();};
+      r.appendChild(x);
+    }
+    return r;
+  }
+
+  function renderToday(){
+    var box=document.getElementById("today");box.textContent="";
+    var list=state.lessons.filter(function(l){return l.day===todayIdx;})
+      .sort(function(a,b){return a.start<b.start?-1:1;});
+    if(!list.length){box.appendChild(el("div","empty","오늘은 학원이 없어요."));return;}
+    list.forEach(function(l){
+      var row=el("div","today-item");
+      var d=el("span","dot");d.style.background=color(l.kid);
+      row.appendChild(d);
+      row.appendChild(el("span","time",l.start+"–"+l.end));
+      var w=el("div");
+      w.appendChild(el("div","who",kidName(l.kid)));
+      w.appendChild(el("div","what",l.title));
+      row.appendChild(w);
+      box.appendChild(row);
+    });
+  }
+
+  function renderNext(){
+    var box=document.getElementById("next");box.textContent="";
+    if(!state.pays.length){box.appendChild(el("div","empty","등록된 결제일이 없어요."));return;}
+    var arr=state.pays.map(function(p){var d=nextPayDate(p.day);return {p:p,d:d,n:dleft(d)};})
+      .sort(function(a,b){return a.n-b.n;});
+    var f=arr[0];
+    var big=el("div","dday"+(f.n<=3?" soon":""));
+    big.appendChild(document.createTextNode(f.n===0?"오늘":"D-"+f.n));
+    box.appendChild(big);
+    box.appendChild(el("div","pay-sub",
+      (f.d.getMonth()+1)+"월 "+f.d.getDate()+"일 · "+kidName(f.p.kid)+" "+f.p.title+" · "+won(f.p.amt)));
+  }
+
+  function renderFilter(){
+    var box=document.getElementById("filter");box.textContent="";
+    function chip(id,label){
+      var b=el("button","chip",label);b.type="button";
+      b.setAttribute("aria-pressed",filter===id?"true":"false");
+      b.onclick=function(){filter=id;render();};
+      box.appendChild(b);
+    }
+    chip("all","전체");
+    state.kids.forEach(function(k){chip(k.id,k.name);});
+  }
+
+  function renderWeek(){
+    var box=document.getElementById("week");box.textContent="";
+    for(var d=0;d<7;d++){
+      var day=el("div","day"+(d===todayIdx?" today":""));
+      day.appendChild(el("div","dname",DAYS[d]));
+      var ls=el("div","lessons");
+      var list=state.lessons.filter(function(l){return l.day===d&&(filter==="all"||l.kid===filter);})
+        .sort(function(a,b){return a.start<b.start?-1:1;});
+      if(!list.length)ls.appendChild(el("div","none","학원 없음"));
+      list.forEach(function(l){ls.appendChild(lessonRow(l,true));});
+      day.appendChild(ls);
+      box.appendChild(day);
+    }
+  }
+
+  function renderPays(){
+    var box=document.getElementById("pays");box.textContent="";
+    var arr=state.pays.map(function(p){var d=nextPayDate(p.day);return {p:p,d:d,n:dleft(d)};})
+      .sort(function(a,b){return a.n-b.n;});
+    if(!arr.length)box.appendChild(el("div","empty","결제 정보를 추가해 주세요."));
+    var total=0;
+    arr.forEach(function(o){
+      total+=Number(o.p.amt);
+      var r=el("div","pay");
+      var dot=el("span","dot");dot.style.background=color(o.p.kid);r.appendChild(dot);
+      var info=el("div","info");
+      info.appendChild(el("div","nm",kidName(o.p.kid)+" · "+o.p.title));
+      info.appendChild(el("div","dt","매달 "+o.p.day+"일 결제"));
+      r.appendChild(info);
+      r.appendChild(el("span","badge"+(o.n<=3?" soon":""),o.n===0?"오늘":"D-"+o.n));
+      r.appendChild(el("span","amt",won(o.p.amt)));
+      var x=el("button","x","×");x.type="button";x.setAttribute("aria-label","삭제");
+      x.onclick=function(){state.pays=state.pays.filter(function(i){return i.id!==o.p.id;});save();render();};
+      r.appendChild(x);
+      box.appendChild(r);
+    });
+    var t=document.getElementById("total");t.textContent="";
+    if(arr.length){t.appendChild(document.createTextNode("한 달 학원비 합계 "));t.appendChild(el("b",null,won(total)));}
+  }
+
+  function fillSelects(){
+    ["lKid","pKid"].forEach(function(id){
+      var s=document.getElementById(id),cur=s.value;s.textContent="";
+      state.kids.forEach(function(k){var o=el("option",null,k.name);o.value=k.id;s.appendChild(o);});
+      if(cur)s.value=cur;
+    });
+    var ld=document.getElementById("lDay");
+    if(!ld.options.length){
+      DAYS.forEach(function(n,i){var o=el("option",null,n+"요일");o.value=i;ld.appendChild(o);});
+      ld.value=todayIdx;
+    }
+  }
+
+  function renderKids(){
+    var box=document.getElementById("kids");box.textContent="";
+    state.kids.forEach(function(k,i){
+      var row=el("div","kidrow");
+      var dot=el("span","dot");dot.style.background=COLORS[i%COLORS.length];row.appendChild(dot);
+      var inp=document.createElement("input");inp.value=k.name;inp.maxLength=10;
+      inp.setAttribute("aria-label","자녀 이름");
+      inp.onchange=function(){k.name=inp.value.trim()||k.name;save();render();};
+      row.appendChild(inp);
+      box.appendChild(row);
+    });
+    document.getElementById("addKid").style.display=state.kids.length>=4?"none":"";
+  }
+
+  function render(){
+    if(filter!=="all"&&!state.kids.some(function(k){return k.id===filter;}))filter="all";
+    renderToday();renderNext();renderFilter();renderWeek();renderPays();fillSelects();renderKids();
+  }
+
+  function say(id,text,isErr){
+    var m=document.getElementById(id);m.textContent=text;
+    m.className="msg full"+(isErr?" err":"");
+  }
+  document.getElementById("lSave").onclick=function(){
+    var s=document.getElementById("lStart").value,en=document.getElementById("lEnd").value;
+    var title=document.getElementById("lTitle").value.trim();
+    if(!title){say("lMsg","학원 이름을 입력해 주세요.",true);return;}
+    if(!s||!en){say("lMsg","시작·끝 시간을 입력해 주세요.",true);return;}
+    if(en<=s){say("lMsg","끝나는 시간이 시작 시간보다 늦어야 해요.",true);return;}
+    var kid=document.getElementById("lKid").value, day=Number(document.getElementById("lDay").value);
+    state.lessons.push({id:uid(),kid:kid,day:day,start:s,end:en,title:title});
+    document.getElementById("lTitle").value="";
+    filter="all";
+    save();render();
+    say("lMsg","저장했어요: "+kidName(kid)+" · "+DAYS[day]+"요일 "+s+"–"+en+" "+title,false);
+  };
+  document.getElementById("pSave").onclick=function(){
+    var d=Number(document.getElementById("pDay").value);
+    if(!document.getElementById("pTitle").value.trim()){say("pMsg","학원 이름을 입력해 주세요.",true);return;}
+    if(document.getElementById("pAmt").value===""){say("pMsg","결제 금액을 입력해 주세요.",true);return;}
+    if(d<1||d>31){say("pMsg","결제일은 1~31 사이로 입력해 주세요.",true);return;}
+    state.pays.push({id:uid(),kid:document.getElementById("pKid").value,day:d,
+      amt:Number(document.getElementById("pAmt").value),
+      title:document.getElementById("pTitle").value.trim()});
+    ["pDay","pTitle","pAmt"].forEach(function(i){document.getElementById(i).value="";});
+    save();render();
+    say("pMsg","저장했어요.",false);
+  };
+  document.getElementById("addKid").onclick=function(){
+    if(state.kids.length>=4)return;
+    state.kids.push({id:uid(),name:"자녀"+(state.kids.length+1)});
+    save();render();
+  };
+  document.getElementById("reset").onclick=function(){
+    state=sample();filter="all";save();render();
+  };
+
+  [["lessonForm","lSave"],["payForm","pSave"]].forEach(function(a){
+    document.getElementById(a[0]).addEventListener("keydown",function(e){
+      if(e.key==="Enter"&&e.target.tagName==="INPUT"){e.preventDefault();document.getElementById(a[1]).click();}
     });
   });
+
+  render();
 })();
 </script>
 </body>
